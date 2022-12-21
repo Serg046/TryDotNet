@@ -23,3 +23,6 @@ jobs:
       with:
         branch: gh-pages
         folder: release/wwwroot
+        
+    - name: Change base-tag in index.html from / to TryDotNet
+      run: sed -i 's/<base href="\/" \/>/<base href="\/TryDotNet\/" \/>/g' release/wwwroot/index.html
