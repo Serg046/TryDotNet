@@ -22,7 +22,7 @@ jobs:
       run: sed -i 's/<base href="\/" \/>/<base href="\/TryDotNet"\/>/g' release/wwwroot/index.html
       
     - name: Change links tag in index.html from / to TryDotNet
-      run: sed -i 's/<a href="\/" \/>/<base href="\/TryDotNet\/"\/>/g' release/wwwroot/index.html
+      run: sed -i 's/<a href="\//<base href="\/TryDotNet/g' release/wwwroot/index.html
       
     - name: Add .nojekyll file
       run: touch release/wwwroot/.nojekyll
