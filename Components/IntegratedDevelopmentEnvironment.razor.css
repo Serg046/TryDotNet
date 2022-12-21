@@ -1,0 +1,27 @@
+﻿.editor {
+    height: 70%;
+}
+
+.run-button {
+    height: 100%;
+    width: 100px;
+    background: #EEEEEE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .run-button:hover {
+        background: #DDDDDD;
+    }
+
+.run-button-container {
+    height: 23px;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.console {
+    overflow-y: auto;
+    height: calc(30% - 24px);
+}

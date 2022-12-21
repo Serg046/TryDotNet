@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>InterviewDotNet</title>
+    <base href="/" />
+    <link href="app.css" rel="stylesheet" />
+    <link href="InterviewDotNet.styles.css" rel="stylesheet">
+    <link href="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" rel="stylesheet" />
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let activeSet = false;
+            var links = document.querySelectorAll("#menu a");
+            links.forEach(a => {
+                if (a.href == window.location.href) {
+                    a.classList.add("active");
+                    activeSet = true;
+                }
+            });
+            if (!activeSet) {
+                links[0].classList.add("active");
+            }
+        });
+
+        function selectLink(event) {
+            document.querySelectorAll("#menu a").forEach(a => a.classList.value = undefined);
+            event.srcElement.classList.add("active");
+        }
+    </script>
+</head>
+
+<body>
+    <div id="menu">
+        <a href="/" onclick="selectLink(event)">Sample 1</a>
+        <a href="/sample2" onclick="selectLink(event)">Sample 2</a>
+    </div>
+    <div id="app">Loading</div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/loader.js"></script>
+    <script>require.config({ paths: { 'vs': '_content/BlazorMonaco/lib/monaco-editor/min/vs' } });</script>
+    <script src="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
+    <script src="_content/BlazorMonaco/jsInterop.js"></script>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>
