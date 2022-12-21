@@ -1,0 +1,28 @@
+/* /Components/IntegratedDevelopmentEnvironment.razor.rz.scp.css */
+.editor[b-36gw4m2vn1] {
+    height: 70%;
+}
+
+.run-button[b-36gw4m2vn1] {
+    height: 100%;
+    width: 100px;
+    background: #EEEEEE;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+    .run-button:hover[b-36gw4m2vn1] {
+        background: #DDDDDD;
+    }
+
+.run-button-container[b-36gw4m2vn1] {
+    height: 23px;
+    border-bottom: 1px solid #EEEEEE;
+}
+
+.console[b-36gw4m2vn1] {
+    overflow-y: auto;
+    height: calc(30% - 24px);
+}
