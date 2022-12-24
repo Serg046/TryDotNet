@@ -1,0 +1,73 @@
+﻿@using BlazorMonaco
+@using Microsoft.CodeAnalysis;
+@using Microsoft.CodeAnalysis.CSharp;
+@using System.Runtime.Loader;
+@inject NavigationManager Navigator
+
+<div class="editor">
+    <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
+</div>
+<div class="run-button-container">
+    <div class="run-button" @onclick="Run">Run</div>
+</div>
+<div class="console">
+    @_output
+</div>
+
+@code {
+    private static Lazy<Task<IReadOnlyList<MetadataReference>>>? _references;
+    private string? _output;
+    private MonacoEditor? _editor = null;
+
+    public Fiddle()
+    {
+        _references ??= new(async () =>
+        {
+            var references = new List<MetadataReference>();
+            var httpClient = new HttpClient() { BaseAddress = new Uri(Navigator.BaseUri) };
+            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Console.dll")));
+            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Private.CoreLib.dll")));
+            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Runtime.dll")));
+            return references;
+        });
+    }
+
+    [Parameter]
+    public string Code { get; set; } = string.Empty;
+
+    private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
+        => new() { Language = "csharp", Value = Code };
+
+    private async void Run()
+    {
+        if (_editor == null) throw new MissingMemberException("Cannot find the editor");
+        if (_references == null) throw new MissingMemberException("Cannot find the references");
+
+        var syntaxTree = CSharpSyntaxTree.ParseText(await _editor.GetValue(), new CSharpParseOptions(LanguageVersion.Latest));
+        var compilation = CSharpCompilation.Create("Fiddle", new[] { syntaxTree }, await _references.Value, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        using var stream = new MemoryStream();
+        var emitResult = compilation.Emit(stream);
+        stream.Position = 0;
+
+        var host = new CollectibleAssemblyLoadContext();
+        var assemby = host.LoadFromStream(stream);
+        var type = assemby.GetType("Program") ?? throw new MissingMemberException("Program class was not found");
+        var methodInfo = type.GetMethod("Main") ?? throw new MissingMethodException("Program", "Main");
+        var instance = Activator.CreateInstance(type);
+        var consoleOut = new StringWriter();
+        Console.SetOut(consoleOut);
+        methodInfo.Invoke(instance, null);
+        Console.SetOut(Console.Out);
+        _output = consoleOut.ToString();
+        host.Unload();
+
+        StateHasChanged();
+    }
+
+    private class CollectibleAssemblyLoadContext : AssemblyLoadContext
+    {
+        public CollectibleAssemblyLoadContext() : base(isCollectible: true)
+        {
+        }
+    }
+}
