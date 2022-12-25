@@ -3,6 +3,7 @@
 @using Microsoft.CodeAnalysis.CSharp;
 @using System.Runtime.Loader;
 @inject NavigationManager Navigator
+@inject HttpClient HttpClient
 
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
@@ -24,10 +25,9 @@
         _references ??= new(async () =>
         {
             var references = new List<MetadataReference>();
-            var httpClient = new HttpClient() { BaseAddress = new Uri(Navigator.BaseUri) };
-            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Console.dll")));
-            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Private.CoreLib.dll")));
-            references.Add(MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("/_framework/System.Runtime.dll")));
+            references.Add(MetadataReference.CreateFromStream(await HttpClient.GetStreamAsync("/_framework/System.Console.dll")));
+            references.Add(MetadataReference.CreateFromStream(await HttpClient.GetStreamAsync("/_framework/System.Private.CoreLib.dll")));
+            references.Add(MetadataReference.CreateFromStream(await HttpClient.GetStreamAsync("/_framework/System.Runtime.dll")));
             return references;
         });
     }
