@@ -26,7 +26,9 @@
 
 .console {
     padding: 12px 12px 12px 22px;
+    overflow-x: auto;
     overflow-y: auto;
     height: calc(30% - 48px); /*24px of .run-button-container + 24px of padding here*/
     white-space: pre-line;
+    line-height: 1.5em;
 }
