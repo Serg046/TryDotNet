@@ -2,8 +2,11 @@
 @using Microsoft.CodeAnalysis;
 @using Microsoft.CodeAnalysis.CSharp;
 @using System.Runtime.Loader;
+@using BlazorWorker.BackgroundServiceFactory;
+
 @inject NavigationManager Navigator
 @inject HttpClient HttpClient
+@inject BlazorWorker.Core.IWorkerFactory WorkerFactory
 
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
@@ -42,6 +45,15 @@
         => new() { Language = "csharp", Value = Code };
 
     private async void Run()
+    {
+        var worker = await WorkerFactory.CreateAsync();
+        var service = await worker.CreateBackgroundServiceAsync<FiddleService>();
+        var code = await Editor.GetValue();
+        _output = await service.RunAsync(fiddle => fiddle.Run(code));
+        StateHasChanged();
+    }
+
+    private async void Run2()
     {
         if (_references == null) throw new MissingMemberException("Cannot find the references");
 
