@@ -41,18 +41,27 @@ body {
     display: flex;
 }
 
+#app {
+    flex-direction: column;
+    width: 86%;
+}
+
 #menu {
     display: flex;
     flex-direction: column;
     border-right: 1px solid #EEEEEE;
+    width: 14%;
 }
 
     #menu a {
+        display: flex;
         color: black;
         white-space: nowrap;
         flex-direction: row;
-        padding: 12px 48px;
         text-decoration: none;
+        height: 36px;
+        align-items: center;
+        justify-content: center;
     }
 
         #menu a:hover {
@@ -62,11 +71,6 @@ body {
         #menu a.active {
             background: #EEEEEE;
         }
-
-#app {
-    flex-direction: column;
-    width: 100%;
-}
 
 .monaco-editor-container {
     height: 100%;
