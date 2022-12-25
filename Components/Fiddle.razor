@@ -8,8 +8,9 @@
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
 </div>
-<div class="run-button-container">
-    <div class="run-button" @onclick="Run">Run</div>
+<div class="button-container">
+    <div class="button" @onclick="Run">Run</div>
+    <div class="button" @onclick="Reset">Reset</div>
 </div>
 <div class="console">
     @_output
@@ -35,32 +36,72 @@
     [Parameter]
     public string Code { get; set; } = string.Empty;
 
+    private MonacoEditor Editor => _editor ?? throw new MissingMemberException("Cannot find the editor");
+
     private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
         => new() { Language = "csharp", Value = Code };
 
     private async void Run()
     {
-        if (_editor == null) throw new MissingMemberException("Cannot find the editor");
         if (_references == null) throw new MissingMemberException("Cannot find the references");
 
-        var syntaxTree = CSharpSyntaxTree.ParseText(await _editor.GetValue(), new CSharpParseOptions(LanguageVersion.Latest));
+        var syntaxTree = CSharpSyntaxTree.ParseText(await Editor.GetValue(), new CSharpParseOptions(LanguageVersion.Latest));
         var compilation = CSharpCompilation.Create("Fiddle", new[] { syntaxTree }, await _references.Value, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
-        using var stream = new MemoryStream();
-        var emitResult = compilation.Emit(stream);
-        stream.Position = 0;
+        var diagnostics = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+        if (diagnostics.Count == 0)
+        {
+            using var stream = new MemoryStream();
+            var emitResult = compilation.Emit(stream);
+            stream.Position = 0;
 
-        var host = new CollectibleAssemblyLoadContext();
-        var assemby = host.LoadFromStream(stream);
-        var type = assemby.GetType("Program") ?? throw new MissingMemberException("Program class was not found");
-        var methodInfo = type.GetMethod("Main") ?? throw new MissingMethodException("Program", "Main");
-        var instance = Activator.CreateInstance(type);
-        var consoleOut = new StringWriter();
-        Console.SetOut(consoleOut);
-        methodInfo.Invoke(instance, null);
-        Console.SetOut(Console.Out);
-        _output = consoleOut.ToString();
-        host.Unload();
+            if (emitResult.Success)
+            {
+                _output = LoadAndRun(stream);
+            }
+            else
+            {
+                _output = FormatDiagnostics(emitResult.Diagnostics);
+            }
+        }
+        else
+        {
+            _output = FormatDiagnostics(diagnostics);
+        }
 
+        StateHasChanged();
+    }
+
+    private static string LoadAndRun(Stream assembly)
+    {
+        string output;
+        try
+        {
+            var host = new CollectibleAssemblyLoadContext();
+            var assemby = host.LoadFromStream(assembly);
+            var type = assemby.GetType("Program") ?? throw new MissingMemberException("Program class was not found");
+            var methodInfo = type.GetMethod("Main") ?? throw new MissingMethodException("Program", "Main");
+            var instance = Activator.CreateInstance(type);
+            var consoleOut = new StringWriter();
+            Console.SetOut(consoleOut);
+            methodInfo.Invoke(instance, null);
+            Console.SetOut(Console.Out);
+            output = consoleOut.ToString();
+            host.Unload();
+        }
+        catch (Exception ex)
+        {
+            output = ex.ToString();
+        }
+
+        return output;
+    }
+
+    private string FormatDiagnostics(IEnumerable<Diagnostic> diagnostics) => string.Join(Environment.NewLine, diagnostics.Select(d => d.ToString()));
+
+    private async void Reset()
+    {
+        await Editor.SetValue(Code);
+        _output = null;
         StateHasChanged();
     }
 

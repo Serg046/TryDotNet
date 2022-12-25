@@ -2,7 +2,7 @@
     height: 70%;
 }
 
-.run-button {
+.button {
     height: 100%;
     width: 100px;
     background: #EEEEEE;
@@ -10,18 +10,23 @@
     align-items: center;
     justify-content: center;
     cursor: pointer;
+    flex-direction: column;
+    margin-right: 1px;
 }
 
-    .run-button:hover {
+    .button:hover {
         background: #DDDDDD;
     }
 
-.run-button-container {
+.button-container {
     height: 23px;
     border-bottom: 1px solid #EEEEEE;
+    display: flex;
 }
 
 .console {
+    padding: 12px 12px 12px 22px;
     overflow-y: auto;
-    height: calc(30% - 24px);
+    height: calc(30% - 48px); /*24px of .run-button-container + 24px of padding here*/
+    white-space: pre-line;
 }
