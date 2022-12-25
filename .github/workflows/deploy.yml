@@ -19,7 +19,7 @@ jobs:
       run: sed -i 's/<base href="\/" \/>/<base href="\/TryDotNet\/" \/>/g' wwwroot/index.html
 
     - name: Change base tag in Program.cs from / to TryDotNet
-      run: sed -i 's/const string baseTag = "\/";/const string baseTag = "\/TryDotNet\/";/g' Program.cs
+      run: sed -i 's/const string baseTag = "\/"/const string baseTag = "\/TryDotNet\/"/g' Program.cs
         
     - name: Publish .NET Core Project
       run: dotnet publish InterviewDotNet.sln -c Release --output release --nologo
