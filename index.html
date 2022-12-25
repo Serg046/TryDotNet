@@ -9,19 +9,23 @@
     <link href="InterviewDotNet.styles.css" rel="stylesheet">
     <link href="_content/BlazorMonaco/lib/monaco-editor/min/vs/editor/editor.main.css" rel="stylesheet" />
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", () => selectLinkBasedOnLocation());
+
+        function selectLinkBasedOnLocation() {
             let activeSet = false;
             var links = document.querySelectorAll("#menu a");
             links.forEach(a => {
                 if (a.href == window.location.href) {
                     a.classList.add("active");
                     activeSet = true;
+                } else {
+                    a.classList.value = undefined;
                 }
             });
             if (!activeSet) {
                 links[0].classList.add("active");
             }
-        });
+        }
 
         function selectLink(event) {
             document.querySelectorAll("#menu a").forEach(a => a.classList.value = undefined);
@@ -32,8 +36,8 @@
 
 <body>
     <div id="menu">
-        <a href="/TryDotNet/" onclick="selectLink(event)">Sample 1</a>
-        <a href="/TryDotNet/sample2" onclick="selectLink(event)">Sample 2</a>
+        <a href="/" onclick="selectLink(event)">Sample 1</a>
+        <a href="?p=sample2" onclick="selectLink(event)">Sample 2</a>
     </div>
     <div id="app"/>
 
