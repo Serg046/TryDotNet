@@ -4,6 +4,7 @@
 @using System.Runtime.Loader;
 @inject NavigationManager Navigator
 @inject HttpClient HttpClient
+@inherits MvvmComponent<FiddleViewModel>
 
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
@@ -33,13 +34,10 @@
         });
     }
 
-    [Parameter]
-    public string Code { get; set; } = string.Empty;
-
     private MonacoEditor Editor => _editor ?? throw new MissingMemberException("Cannot find the editor");
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
-        => new() { Language = "csharp", Value = Code };
+        => new() { Language = "csharp", Value = DataContext.InitialCode };
 
     private async void Run()
     {
@@ -100,7 +98,7 @@
 
     private async void Reset()
     {
-        await Editor.SetValue(Code);
+        await Editor.SetValue(DataContext.InitialCode);
         _output = null;
         StateHasChanged();
     }
