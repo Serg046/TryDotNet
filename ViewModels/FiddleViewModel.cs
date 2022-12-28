@@ -2,6 +2,7 @@
 
 public class FiddleViewModel : ViewModel
 {
+    public delegate FiddleViewModel Create(string initialCode);
     public FiddleViewModel(string initialCode)
     {
         InitialCode = initialCode;

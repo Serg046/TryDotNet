@@ -2,9 +2,9 @@
 
 public class RootViewModel : ViewModel
 {
-    public RootViewModel()
+    public RootViewModel(IViewModelFactory vmFactory)
     {
-        Sample1 = new("""
+        Sample1 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 
 class Program
@@ -15,7 +15,7 @@ class Program
     }
 }
 """);
-        Sample2 = new("""
+        Sample2 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 
 class Program
