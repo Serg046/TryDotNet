@@ -2,9 +2,12 @@
 @using Microsoft.CodeAnalysis;
 @using Microsoft.CodeAnalysis.CSharp;
 @using System.Runtime.Loader;
+@inherits MvvmComponent<FiddleViewModel>
+
 @inject NavigationManager Navigator
 @inject HttpClient HttpClient
-@inherits MvvmComponent<FiddleViewModel>
+@inject IJSRuntime JSRuntime;
+@inject IMonacoService MonacoService;
 
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
@@ -21,6 +24,8 @@
     private static Lazy<Task<IReadOnlyList<MetadataReference>>>? _references;
     private string? _output;
     private MonacoEditor? _editor = null;
+    private bool _hasRegistered = false;
+    private DotNetObjectReference<IMonacoService>? _monacoServiceRef;
 
     public Fiddle()
     {
@@ -35,6 +40,16 @@
     }
 
     private MonacoEditor Editor => _editor ?? throw new MissingMemberException("Cannot find the editor");
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_hasRegistered)
+        {
+            _monacoServiceRef = DotNetObjectReference.Create(MonacoService);
+            await JSRuntime.InvokeAsync<string>("registerProviders", _monacoServiceRef);
+            _hasRegistered = true;
+        }
+    }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
         => new() { Language = "csharp", Value = DataContext.InitialCode };
