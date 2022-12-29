@@ -1,9 +1,10 @@
 ﻿@using BlazorMonaco
-@using Microsoft.CodeAnalysis;
-@using Microsoft.CodeAnalysis.CSharp;
-@using System.Runtime.Loader;
+@using Microsoft.CodeAnalysis
+@using Microsoft.CodeAnalysis.CSharp
+@using System.Runtime.Loader
 @inherits MvvmComponent<FiddleViewModel>
 @inject IRoslynService RoslynService
+@inject IJSRuntime JSRuntime
 
 <div class="editor">
     <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
@@ -18,11 +19,23 @@
 
 @code {
     private string? _output;
+    private bool _areMonacoProvidersRegistered = false;
+    private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
     private MonacoEditor? _editor = null;
     private MonacoEditor Editor => _editor ?? throw new MissingMemberException("Cannot find the editor");
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
         => new() { Language = "csharp", Value = DataContext.InitialCode };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (!_areMonacoProvidersRegistered)
+        {
+            _roslynServiceRef = DotNetObjectReference.Create(RoslynService);
+            await JSRuntime.InvokeAsync<string>("registerMonacoProviders", _roslynServiceRef);
+            _areMonacoProvidersRegistered = true;
+        }
+    }
 
     private async void Run()
     {

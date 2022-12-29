@@ -1,5 +1,7 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using InterviewDotNet.Models;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.JSInterop;
 using System.Runtime.Loader;
 
 namespace InterviewDotNet.Services;
@@ -20,10 +22,7 @@ public class RoslynService : IRoslynService
 
     public async Task<string> CompileAndRun(string code)
     {
-        if (_references == null) throw new MissingMemberException("Cannot find the references");
-
-        var syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Latest));
-        var compilation = CSharpCompilation.Create("Fiddle", new[] { syntaxTree }, await _references.Value, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        var (_, compilation) = await Compile(code);
         var diagnostics = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
         string output;
         if (diagnostics.Count == 0)
@@ -47,6 +46,14 @@ public class RoslynService : IRoslynService
         }
 
         return output;
+    }
+
+    private static async Task<(SyntaxTree SyntaxTree, CSharpCompilation Compilation)> Compile(string code)
+    {
+        if (_references == null) throw new MissingMemberException("Cannot find the references");
+        var syntaxTree = CSharpSyntaxTree.ParseText(code, new CSharpParseOptions(LanguageVersion.Latest));
+        var compilation = CSharpCompilation.Create("Fiddle", new[] { syntaxTree }, await _references.Value, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
+        return (syntaxTree, compilation);
     }
 
     private static string LoadAndRun(Stream assembly)
@@ -75,6 +82,62 @@ public class RoslynService : IRoslynService
     }
 
     private static string FormatDiagnostics(IEnumerable<Diagnostic> diagnostics) => string.Join(Environment.NewLine, diagnostics.Select(d => d.ToString()));
+
+    [JSInvokable]
+    public async Task<IReadOnlyList<Completion>> GetCompletions(string code, CompletionRequest request)
+    {
+        var (syntaxTree, compilation) = await Compile(code);
+        var semanticModel = compilation.GetSemanticModel(syntaxTree);
+        var visitor = new SyntaxNodeVisitor(request, semanticModel);
+        visitor.Visit(syntaxTree.GetRoot());
+        return visitor.GetCompletions().Select(c => c.Name).Distinct().Select(symbolName => new Completion(symbolName, symbolName)).ToList();
+    }
+
+    private class SyntaxNodeVisitor : CSharpSyntaxWalker
+    {
+        private readonly CompletionRequest _request;
+        private readonly SemanticModel _semanticModel;
+        private readonly List<CompletionItem> _completionItems = new();
+
+        public SyntaxNodeVisitor(CompletionRequest request, SemanticModel semanticModel)
+        {
+            _request = request;
+            _semanticModel = semanticModel;
+        }
+
+        public IEnumerable<ISymbol> GetCompletions()
+        {
+            var noDotCompletionItems = _completionItems.Where(c => c.Column == _request.Column).ToList();
+            var completionItems = noDotCompletionItems.Count > 0 ? noDotCompletionItems : _completionItems;
+            foreach (var (column, typeSymbol) in completionItems)
+            foreach (var symbol in _semanticModel.LookupSymbols(column, typeSymbol))
+            {
+                yield return symbol;
+            }
+        }
+
+        public override void Visit(SyntaxNode? node)
+        {
+            base.Visit(node);
+            if (node != null)
+            {
+                var span = node.SyntaxTree.GetLineSpan(node.Span);
+                var line = span.EndLinePosition.Line;
+                var column = span.EndLinePosition.Character;
+                // The current symbol might be a dot that's why we also include the previous one 
+                if (line == _request.Line && (column == _request.Column || column == _request.Column - 1))
+                {
+                    var typeSymbol = _semanticModel.GetTypeInfo(node).Type;
+                    if (typeSymbol != null)
+                    {
+                        _completionItems.Add(new(column, typeSymbol));
+                    }
+                }
+            }
+        }
+
+        private record CompletionItem(int Column, ITypeSymbol TypeSymbol);
+    }
 
     private class CollectibleAssemblyLoadContext : AssemblyLoadContext
     {

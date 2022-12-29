@@ -12,6 +12,8 @@ class Program
     public static void Main()
     {
         Console.WriteLine("Sample 1");
+        var x = "";
+        var z = x.
     }
 }
 """);
