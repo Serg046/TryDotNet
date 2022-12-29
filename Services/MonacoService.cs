@@ -29,13 +29,21 @@ public class MonacoService : IMonacoService
     public async Task<Completion[]> GetCompletionAsync(string code, CompletionRequest completionRequest)
     {
         if (_references == null) throw new MissingMemberException("Cannot find the references");
+        Console.WriteLine($"Column: {completionRequest.Column}, line: {completionRequest.Line}");
 
         var syntaxTree = CSharpSyntaxTree.ParseText(code);
         try
         {
             var compilation = CSharpCompilation.Create("Fiddle", new[] { syntaxTree }, await _references.Value);
             var semanticModel = compilation.GetSemanticModel(syntaxTree);
-            new SyntaxWalker(completionRequest).Visit(syntaxTree.GetRoot());
+            var walker = new SyntaxWalker(completionRequest, semanticModel);
+            walker.Visit(syntaxTree.GetRoot());
+            Console.WriteLine(walker.Completions.Single());
+            var y = semanticModel.LookupSymbols(completionRequest.Column, walker.Completions.Single());
+            foreach (var z in y)
+            {
+                Console.WriteLine($"{z} {z.Name}");
+            }
         }
         catch (Exception ex)
         {
@@ -51,22 +59,44 @@ public class MonacoService : IMonacoService
     class SyntaxWalker : CSharpSyntaxWalker
     {
         private readonly CompletionRequest _request;
+        private readonly SemanticModel _semanticModel;
+        private readonly List<CompletionItem> _completions = new();
 
-        public SyntaxWalker(CompletionRequest request)
+        public SyntaxWalker(CompletionRequest request, SemanticModel semanticModel)
         {
             _request = request;
+            _semanticModel = semanticModel;
+        }
+
+        public IReadOnlyList<ITypeSymbol> Completions
+        {
+            get
+            {
+                var x = _completions.SingleOrDefault(c => c.Column == _request.Column) ?? _completions.Single();
+                return new[] { x.Completion };
+            }
         }
 
         public override void Visit(SyntaxNode? node)
         {
             base.Visit(node);
-            var span = node?.SyntaxTree.GetLineSpan(node.Span);
-            var lineNumber = span?.StartLinePosition.Line;
-            if (lineNumber == _request.Line)
+            if (node != null)
             {
-                Console.WriteLine(span.ToString());
+                var span = node.SyntaxTree.GetLineSpan(node.Span);
+                var line = span.EndLinePosition.Line;
+                var column = span.EndLinePosition.Character;
+                if (line == _request.Line && (column == _request.Column || column == _request.Column - 1))
+                {
+                    var typeSymbol = _semanticModel.GetTypeInfo(node).Type;
+                    if (typeSymbol != null)
+                    {
+                        _completions.Add(new(column, typeSymbol));
+                    }
+                }
             }
         }
+
+        private record CompletionItem(int Column, ITypeSymbol Completion);
     }
 
     public class CompletionRequest
