@@ -2,13 +2,15 @@
 
 public class FiddleViewModel : ViewModel
 {
-    public delegate FiddleViewModel Create(string initialCode);
-    public FiddleViewModel(string initialCode)
+    public delegate FiddleViewModel Create(string sample);
+    public FiddleViewModel(string sample)
     {
-        InitialCode = initialCode;
+        Sample = Code = sample;
     }
 
-    public string InitialCode { get; }
+    public string Sample { get; }
+
+    public string Code { get; set; }
 
     private string _output = "";
     public string Output

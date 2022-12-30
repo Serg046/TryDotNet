@@ -11,5 +11,5 @@ internal static partial class Container
         .Bind<IRoslynService>().To<RoslynService>()
         .Bind<IViewModelFactory>().To<ViewModelFactory>()
         .Bind<FiddleViewModel.Create>().To(ctx => new FiddleViewModel.Create(code => new FiddleViewModel(code)))
-        .Bind<RootViewModel>().To<RootViewModel>();
+        .Bind<RootViewModel>().As(Lifetime.Singleton).To<RootViewModel>();
 }
