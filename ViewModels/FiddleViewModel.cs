@@ -1,12 +1,27 @@
-﻿namespace InterviewDotNet.ViewModels;
+﻿using BlazorMonaco;
+using InterviewDotNet.Services;
+using Microsoft.JSInterop;
+using System.Diagnostics.CodeAnalysis;
+
+namespace InterviewDotNet.ViewModels;
 
 public class FiddleViewModel : ViewModel
 {
+    private readonly IRoslynService _roslynService;
+    private readonly IJSRuntime _jsRuntime;
+    private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
+
     public delegate FiddleViewModel Create(string sample);
-    public FiddleViewModel(string sample)
+    public FiddleViewModel(IRoslynService roslynService, IJSRuntime jsRuntime, string sample)
     {
         Sample = Code = sample;
+        _roslynService = roslynService;
+        _jsRuntime = jsRuntime;
     }
+
+    [AllowNull]
+    public MonacoEditor Editor { get; set; }
+
 
     public string Sample { get; }
 
@@ -20,5 +35,35 @@ public class FiddleViewModel : ViewModel
             _output = value;
             RaisePropertyChanged(nameof(Output));
         }
+    }
+
+    public StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor _) => new() { Language = "csharp", Value = Code };
+
+    public async Task OnAfterRenderAsync()
+    {
+        if (_roslynServiceRef is null)
+        {
+            _roslynServiceRef = DotNetObjectReference.Create(_roslynService);
+            await _jsRuntime.InvokeAsync<string>("registerMonacoProviders", _roslynServiceRef);
+        }
+    }
+
+    public async void Run()
+    {
+        Output = await _roslynService.CompileAndRun(await Editor.GetValue());
+        StateHasChanged();
+    }
+
+    public async void Reset()
+    {
+        Code = Sample;
+        await Editor.SetValue(Code);
+        Output = string.Empty;
+        StateHasChanged();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        Code = await Editor.GetValue();
     }
 }

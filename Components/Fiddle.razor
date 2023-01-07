@@ -8,61 +8,17 @@
 @inject IJSRuntime JSRuntime
 
 <div class="editor">
-    <MonacoEditor @ref="_editor" ConstructionOptions="EditorConstructionOptions" />
+    <MonacoEditor @ref="DataContext.Editor" ConstructionOptions="DataContext.EditorConstructionOptions" />
 </div>
 <div class="button-container">
-    <div class="button" @onclick="Run">Run</div>
-    <div class="button" @onclick="Reset">Reset</div>
+    <div class="button" @onclick="DataContext.Run">Run</div>
+    <div class="button" @onclick="DataContext.Reset">Reset</div>
 </div>
 <div class="console">
-    @_output
+    @DataContext.Output
 </div>
 
 @code {
-    private string? _output;
-    private bool _areMonacoProvidersRegistered = false;
-    private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
-    private MonacoEditor? _editor = null;
-    private MonacoEditor Editor => _editor ?? throw new MissingMemberException("Cannot find the editor");
-
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor editor)
-        => new() { Language = "csharp", Value = DataContext.Code };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (!_areMonacoProvidersRegistered)
-        {
-            _roslynServiceRef = DotNetObjectReference.Create(RoslynService);
-            await JSRuntime.InvokeAsync<string>("registerMonacoProviders", _roslynServiceRef);
-            _areMonacoProvidersRegistered = true;
-        }
-    }
-
-    private async void Run()
-    {
-        _output = await RoslynService.CompileAndRun(await Editor.GetValue());
-        StateHasChanged();
-    }
-
-    private async void Reset()
-    {
-        DataContext.Code = DataContext.Sample;
-        await Editor.SetValue(DataContext.Code);
-        _output = null;
-        StateHasChanged();
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        Console.WriteLine(11);
-        DataContext.Code = await Editor.GetValue();
-        Console.WriteLine(22);
-    }
-
-    private class CollectibleAssemblyLoadContext : AssemblyLoadContext
-    {
-        public CollectibleAssemblyLoadContext() : base(isCollectible: true)
-        {
-        }
-    }
+    protected override Task OnAfterRenderAsync(bool firstRender) => DataContext.OnAfterRenderAsync();
+    public ValueTask DisposeAsync() => DataContext.DisposeAsync();
 }
