@@ -1,0 +1,10 @@
+﻿.session {
+	position: fixed;
+	transform: translateY(-100%);
+	display: none;
+	background-color: white;
+}
+
+	.session.shown {
+		display: block;
+	}

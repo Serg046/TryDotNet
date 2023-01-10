@@ -12,16 +12,18 @@ public class FiddleViewModel : ViewModel
     private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
 
     public delegate FiddleViewModel Create(string sample);
-    public FiddleViewModel(IRoslynService roslynService, IJSRuntime jsRuntime, string sample)
+    public FiddleViewModel(IRoslynService roslynService, IJSRuntime jsRuntime, IViewModelFactory vmFactory, string sample)
     {
         Sample = Code = sample;
         _roslynService = roslynService;
         _jsRuntime = jsRuntime;
+        SessionViewModel = vmFactory.Create<SessionViewModel.Create>()();
     }
+
+    public SessionViewModel SessionViewModel { get; }
 
     [AllowNull]
     public MonacoEditor Editor { get; set; }
-
 
     public string Sample { get; }
 
@@ -30,7 +32,8 @@ public class FiddleViewModel : ViewModel
     private string _output = "";
     public string Output
     {
-        get => _output; set
+        get => _output;
+        set
         {
             _output = value;
             RaisePropertyChanged(nameof(Output));
@@ -59,6 +62,12 @@ public class FiddleViewModel : ViewModel
         Code = Sample;
         await Editor.SetValue(Code);
         Output = string.Empty;
+        StateHasChanged();
+    }
+
+    public void ToggleSession()
+    {
+        SessionViewModel.IsShown = !SessionViewModel.IsShown;
         StateHasChanged();
     }
 

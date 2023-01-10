@@ -10,9 +10,11 @@
 <div class="editor">
     <MonacoEditor @ref="DataContext.Editor" ConstructionOptions="DataContext.EditorConstructionOptions" />
 </div>
+<Session DataContext="DataContext.SessionViewModel"/>
 <div class="button-container">
     <div class="button" @onclick="DataContext.Run">Run</div>
     <div class="button" @onclick="DataContext.Reset">Reset</div>
+    <div class="button" @onclick="DataContext.ToggleSession">Session</div>
 </div>
 <div class="console">
     @DataContext.Output
