@@ -13,6 +13,7 @@
     cursor: pointer;
     flex-direction: column;
     margin-right: 1px;
+    user-select: none;
 }
 
     .button:hover[b-j64r9z2ppg] {
@@ -33,3 +34,14 @@
     white-space: pre-line;
     line-height: 1.5em;
 }
+/* /Components/Session.razor.rz.scp.css */
+.session[b-764cegdya3] {
+	position: fixed;
+	transform: translateY(-100%);
+	display: none;
+	background-color: white;
+}
+
+	.session.shown[b-764cegdya3] {
+		display: block;
+	}
