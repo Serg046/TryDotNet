@@ -1,4 +1,5 @@
-﻿function registerMonacoProviders(dotnetHelper) {
+﻿function registerMonacoProviders(roslynService) {
+    console.log(roslynService);
     window.monaco.languages.registerCompletionItemProvider("csharp", {
         triggerCharacters: ["."],
         provideCompletionItems: async (model, position, context) => {
@@ -9,7 +10,7 @@
             };
 
             return {
-                suggestions: await dotnetHelper.invokeMethodAsync("GetCompletions", code, request)
+                suggestions: await roslynService.invokeMethodAsync("GetCompletions", code, request)
             };
         }
     });
