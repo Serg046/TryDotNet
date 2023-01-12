@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.JSInterop;
 using SpawnDev.BlazorJS;
-using SpawnDev.BlazorJS.WebWorkers;
 
 const string baseTag = "/";
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -20,5 +19,5 @@ builder.Services.AddContainer(
     defaultProvider.GetRequiredService<IJSRuntime>(),
     defaultProvider.GetRequiredService<NavigationManager>());
 var host = builder.Build();
-await host.Services.GetRequiredService<WebWorkerService>().InitAsync();
+await host.Services.GetRequiredService<IWebWorkerService>().InitAsync();
 await host.RunAsync();
