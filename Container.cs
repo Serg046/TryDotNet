@@ -12,10 +12,9 @@ internal static partial class Container
         .Arg<HttpClient>()
         .Arg<IJSRuntime>()
         .Arg<NavigationManager>()
-        .Bind<IWebWorkerService>().As(Lifetime.Singleton).To<WebWorkerService>()
         .Bind<IRoslynService>().To<RoslynService>()
         .Bind<IViewModelFactory>().To<ViewModelFactory>()
-        .Bind<FiddleViewModel.Create>().To(ctx => new FiddleViewModel.Create(code => new FiddleViewModel(ctx.Resolve<IJSRuntime>(), ctx.Resolve<IViewModelFactory>(), ctx.Resolve<WebWorkerService>(), code)))
+        .Bind<FiddleViewModel.Create>().To(ctx => new FiddleViewModel.Create(code => new FiddleViewModel(ctx.Resolve<IJSRuntime>(), ctx.Resolve<IViewModelFactory>(), ctx.Resolve<IRoslynService>(), code)))
         .Bind<SessionViewModel.Create>().To(ctx => new SessionViewModel.Create(() => new SessionViewModel()))
         .Bind<RootViewModel>().To<RootViewModel>();
 }

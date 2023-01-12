@@ -1,5 +1,4 @@
 ﻿using BlazorMonaco;
-using InterviewDotNet.Models;
 using InterviewDotNet.Services;
 using Microsoft.JSInterop;
 using System.Diagnostics.CodeAnalysis;
@@ -9,15 +8,15 @@ namespace InterviewDotNet.ViewModels;
 public class FiddleViewModel : ViewModel
 {
     private readonly IJSRuntime _jsRuntime;
-    private readonly IWebWorkerService _webWorkerService;
-    private DotNetObjectReference<FiddleViewModel>? _fiddleViewModelRef;
+    private readonly IRoslynService _roslynService;
+    private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
 
     public delegate FiddleViewModel Create(string sample);
-    public FiddleViewModel(IJSRuntime jsRuntime, IViewModelFactory vmFactory, IWebWorkerService webWorkerService, string sample)
+    public FiddleViewModel(IJSRuntime jsRuntime, IViewModelFactory vmFactory, IRoslynService roslynService, string sample)
     {
         Sample = Code = sample;
         _jsRuntime = jsRuntime;
-        _webWorkerService = webWorkerService;
+        _roslynService = roslynService;
         SessionViewModel = vmFactory.Create<SessionViewModel.Create>()();
     }
 
@@ -45,16 +44,16 @@ public class FiddleViewModel : ViewModel
 
     public async Task OnAfterRenderAsync()
     {
-        if (_fiddleViewModelRef is null)
+        if (_roslynServiceRef is null)
         {
-            _fiddleViewModelRef = DotNetObjectReference.Create(this);
-            await _jsRuntime.InvokeAsync<string>("registerMonacoProviders", _fiddleViewModelRef);
+            _roslynServiceRef = DotNetObjectReference.Create(_roslynService);
+            await _jsRuntime.InvokeAsync<string>("registerMonacoProviders", _roslynServiceRef);
         }
     }
 
     public async void Run()
     {
-        Output = await _webWorkerService.InvokeAsync<IRoslynService, string>(nameof(IRoslynService.CompileAndRun), await Editor.GetValue());
+        Output = await _roslynService.CompileAndRun(await Editor.GetValue());
         StateHasChanged();
     }
 
@@ -64,12 +63,6 @@ public class FiddleViewModel : ViewModel
         await Editor.SetValue(Code);
         Output = string.Empty;
         StateHasChanged();
-    }
-
-    [JSInvokable]
-    public Task<IReadOnlyList<Completion>> GetCompletions(string code, CompletionRequest request)
-    {
-        return _webWorkerService.InvokeAsync<IRoslynService, IReadOnlyList<Completion>>(nameof(IRoslynService.GetCompletions), code, request);
     }
 
     public void ToggleSession()
