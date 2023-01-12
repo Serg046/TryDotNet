@@ -1,22 +1,24 @@
 ﻿using BlazorMonaco;
+using InterviewDotNet.Models;
 using InterviewDotNet.Services;
 using Microsoft.JSInterop;
+using SpawnDev.BlazorJS.WebWorkers;
 using System.Diagnostics.CodeAnalysis;
 
 namespace InterviewDotNet.ViewModels;
 
 public class FiddleViewModel : ViewModel
 {
-    private readonly IRoslynService _roslynService;
     private readonly IJSRuntime _jsRuntime;
-    private DotNetObjectReference<IRoslynService>? _roslynServiceRef;
+    private readonly Lazy<Task<WebWorker>> _webWorker;
+    private DotNetObjectReference<FiddleViewModel>? _fiddleViewModelRef;
 
     public delegate FiddleViewModel Create(string sample);
-    public FiddleViewModel(IRoslynService roslynService, IJSRuntime jsRuntime, IViewModelFactory vmFactory, string sample)
+    public FiddleViewModel(IJSRuntime jsRuntime, IViewModelFactory vmFactory, WebWorkerService webWorkerService, string sample)
     {
         Sample = Code = sample;
-        _roslynService = roslynService;
         _jsRuntime = jsRuntime;
+        _webWorker = new Lazy<Task<WebWorker>>(async () => await webWorkerService.GetWebWorker() ?? throw new PlatformNotSupportedException("Cannot create a worker"));
         SessionViewModel = vmFactory.Create<SessionViewModel.Create>()();
     }
 
@@ -44,16 +46,23 @@ public class FiddleViewModel : ViewModel
 
     public async Task OnAfterRenderAsync()
     {
-        if (_roslynServiceRef is null)
+        if (_fiddleViewModelRef is null)
         {
-            _roslynServiceRef = DotNetObjectReference.Create(_roslynService);
-            await _jsRuntime.InvokeAsync<string>("registerMonacoProviders", _roslynServiceRef);
+            _fiddleViewModelRef = DotNetObjectReference.Create(this);
+            await _jsRuntime.InvokeAsync<string>("registerMonacoProviders", _fiddleViewModelRef);
+            await RunInWorker<IRoslynService, string>(nameof(IRoslynService.CompileAndRun), Sample);
         }
+    }
+
+    private async Task<TReturn> RunInWorker<TService, TReturn>(string methodName, params object?[]? args)
+    {
+        var webWorker = await _webWorker.Value;
+        return await webWorker.InvokeAsync<TService, TReturn>(methodName, args);
     }
 
     public async void Run()
     {
-        Output = await _roslynService.CompileAndRun(await Editor.GetValue());
+        Output = await RunInWorker<IRoslynService, string>(nameof(IRoslynService.CompileAndRun), await Editor.GetValue());
         StateHasChanged();
     }
 
@@ -63,6 +72,12 @@ public class FiddleViewModel : ViewModel
         await Editor.SetValue(Code);
         Output = string.Empty;
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task<IReadOnlyList<Completion>> GetCompletions(string code, CompletionRequest request)
+    {
+        return RunInWorker<IRoslynService, IReadOnlyList<Completion>>(nameof(IRoslynService.GetCompletions), code, request);
     }
 
     public void ToggleSession()

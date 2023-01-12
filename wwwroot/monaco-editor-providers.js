@@ -1,5 +1,4 @@
 ﻿function registerMonacoProviders(roslynService) {
-    console.log(roslynService);
     window.monaco.languages.registerCompletionItemProvider("csharp", {
         triggerCharacters: ["."],
         provideCompletionItems: async (model, position, context) => {

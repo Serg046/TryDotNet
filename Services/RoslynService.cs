@@ -20,32 +20,36 @@ public class RoslynService : IRoslynService
         });
     }
 
-    public async Task<string> CompileAndRun(string code)
+    // Async/await throws "Cannot wait on monitors" here
+    public Task<string> CompileAndRun(string code)
     {
-        var (_, compilation) = await Compile(code);
-        var diagnostics = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
-        string output;
-        if (diagnostics.Count == 0)
+        return Compile(code).ContinueWith(t =>
         {
-            using var stream = new MemoryStream();
-            var emitResult = compilation.Emit(stream);
-            stream.Position = 0;
-
-            if (emitResult.Success)
+            var (_, compilation) = t.Result;
+            var diagnostics = compilation.GetDiagnostics().Where(d => d.Severity == DiagnosticSeverity.Error).ToList();
+            string output;
+            if (diagnostics.Count == 0)
             {
-                output = LoadAndRun(stream);
+                using var stream = new MemoryStream();
+                var emitResult = compilation.Emit(stream);
+                stream.Position = 0;
+
+                if (emitResult.Success)
+                {
+                    output = LoadAndRun(stream);
+                }
+                else
+                {
+                    output = FormatDiagnostics(emitResult.Diagnostics);
+                }
             }
             else
             {
-                output = FormatDiagnostics(emitResult.Diagnostics);
+                output = FormatDiagnostics(diagnostics);
             }
-        }
-        else
-        {
-            output = FormatDiagnostics(diagnostics);
-        }
 
-        return output;
+            return output;
+        });
     }
 
     private static async Task<(SyntaxTree SyntaxTree, CSharpCompilation Compilation)> Compile(string code)
@@ -83,7 +87,6 @@ public class RoslynService : IRoslynService
 
     private static string FormatDiagnostics(IEnumerable<Diagnostic> diagnostics) => string.Join(Environment.NewLine, diagnostics.Select(d => d.ToString()));
 
-    [JSInvokable]
     public async Task<IReadOnlyList<Completion>> GetCompletions(string code, CompletionRequest request)
     {
         var (syntaxTree, compilation) = await Compile(code);
