@@ -14,6 +14,11 @@ public class RoslynService : IRoslynService
     {
         _references ??= new(async () => new List<MetadataReference>
         {
+            // Needed for Sample5
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.Expressions.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.dll")),
+            //---
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Console.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Private.CoreLib.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Runtime.dll"))
@@ -33,7 +38,7 @@ public class RoslynService : IRoslynService
 
             if (emitResult.Success)
             {
-                output = LoadAndRun(stream);
+                output = await LoadAndRun(stream);
             }
             else
             {
@@ -56,7 +61,7 @@ public class RoslynService : IRoslynService
         return (syntaxTree, compilation);
     }
 
-    private static string LoadAndRun(Stream assembly)
+    private static async Task<string> LoadAndRun(Stream assembly)
     {
         string output;
         try
@@ -68,7 +73,10 @@ public class RoslynService : IRoslynService
             var instance = Activator.CreateInstance(type);
             var consoleOut = new StringWriter();
             Console.SetOut(consoleOut);
-            methodInfo.Invoke(instance, null);
+            if (methodInfo.Invoke(instance, null) is Task task)
+            {
+                await task;
+            }
             Console.SetOut(Console.Out);
             output = consoleOut.ToString();
             host.Unload();

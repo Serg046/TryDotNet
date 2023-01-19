@@ -59,6 +59,10 @@ public class ParameterBasedRouter : IComponent, IHandleAfterRender, IDisposable
         return parameters["p"] switch
         {
             "sample2" => typeof(Sample2),
+            "sample3" => typeof(Sample3),
+            "sample4" => typeof(Sample4),
+            "sample5" => typeof(Sample5),
+            "sample6" => typeof(Sample6),
             _ => typeof(Sample1)
         };
     }
