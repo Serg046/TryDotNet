@@ -1,3 +1,10 @@
+:root {
+    --left-menu-width: 13%;
+    --app-container-width: 87%;
+    --fiddle-editor-height: 74%;
+    --fiddle-console-height: 26%;
+}
+
 h1:focus {
     outline: none;
 }
@@ -44,14 +51,14 @@ body {
 #app {
     display: flex;
     flex-direction: column;
-    width: 86%;
+    width: var(--app-container-width);
 }
 
 #menu {
     display: flex;
     flex-direction: column;
     border-right: 1px solid #EEEEEE;
-    width: 14%;
+    width: var(--left-menu-width);
 }
 
     #menu a {

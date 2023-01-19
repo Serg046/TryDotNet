@@ -40,7 +40,7 @@ public class FiddleViewModel : ViewModel
         }
     }
 
-    public StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor _) => new() { Language = "csharp", Value = Code };
+    public StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor _) => new() { Language = "csharp", Value = Code, AutomaticLayout = true };
 
     public async Task OnAfterRenderAsync()
     {
