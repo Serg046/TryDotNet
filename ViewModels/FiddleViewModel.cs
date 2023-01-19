@@ -40,6 +40,17 @@ public class FiddleViewModel : ViewModel
         }
     }
 
+    private bool _isLoaderShown;
+    public bool IsLoaderShown
+    {
+        get => _isLoaderShown;
+        set
+        {
+            _isLoaderShown = value;
+            RaisePropertyChanged(nameof(_isLoaderShown));
+        }
+    }
+
     public StandaloneEditorConstructionOptions EditorConstructionOptions(MonacoEditor _) => new() { Language = "csharp", Value = Code, AutomaticLayout = true };
 
     public async Task OnAfterRenderAsync()
@@ -53,8 +64,9 @@ public class FiddleViewModel : ViewModel
 
     public async void Run()
     {
+        IsLoaderShown = true;
         Output = await _roslynService.CompileAndRun(await Editor.GetValue());
-        StateHasChanged();
+        IsLoaderShown = false;
     }
 
     public async void Reset()
@@ -62,13 +74,11 @@ public class FiddleViewModel : ViewModel
         Code = Sample;
         await Editor.SetValue(Code);
         Output = string.Empty;
-        StateHasChanged();
     }
 
     public void ToggleSession()
     {
         SessionViewModel.IsShown = !SessionViewModel.IsShown;
-        StateHasChanged();
     }
 
     public async ValueTask DisposeAsync()

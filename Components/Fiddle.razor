@@ -14,7 +14,12 @@
 <div class="button-container">
     <div class="button" @onclick="DataContext.Run">Run</div>
     <div class="button" @onclick="DataContext.Reset">Reset</div>
-    <div class="button" @onclick="DataContext.ToggleSession">Session</div>
+</div>
+<div class="loader">
+    @if (DataContext.IsLoaderShown)
+    {
+        <div class="loader-bar"></div>
+    }
 </div>
 <div class="console">
     @DataContext.Output
