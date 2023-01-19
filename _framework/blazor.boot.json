@@ -8,7 +8,7 @@
   "resources": {
     "assembly": {
       "BlazorMonaco.dll": "sha256-azr7uUonDjjxaCvj\/fd9X9dbiRNGuuqGzG46\/\/k9G0o=",
-      "InterviewDotNet.dll": "sha256-zJGXsx\/xEXBGsGviMK0gy+C+5sk9LjEH2DW8ZxefHco=",
+      "InterviewDotNet.dll": "sha256-MzL1hKAsvlg7BvNUPK3aRo3TbhpFbiCjOqYOO5u0qrc=",
       "Microsoft.AspNetCore.Components.dll": "sha256-IEjDnvj3iZcuwXkDVkrashsEzlcECFDsh0a47uHJcic=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-Ug3w+VrCSbgu3YqKZF2NxJXgGMw8C+rQ3K1JxxhnNQ8=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-n+pgWmUwTJGMPouOWkSwNRh\/tj5pdq7qjDl7397+xXc=",

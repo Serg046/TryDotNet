@@ -1,8 +1,8 @@
 :root {
-    --left-menu-width: 13%;
-    --app-container-width: 87%;
-    --fiddle-editor-height: 74%;
-    --fiddle-console-height: 26%;
+    --left-menu-width: 240px;
+    --app-container-width: calc(100% - 240px);
+    --fiddle-editor-height: calc(100% - 220px);
+    --fiddle-console-height: 220px;
 }
 
 h1:focus {
