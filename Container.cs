@@ -16,5 +16,5 @@ internal static partial class Container
         .Bind<IViewModelFactory>().To<ViewModelFactory>()
         .Bind<FiddleViewModel.Create>().To(ctx => new FiddleViewModel.Create(code => new FiddleViewModel(ctx.Resolve<IJSRuntime>(), ctx.Resolve<IViewModelFactory>(), ctx.Resolve<IRoslynService>(), code)))
         .Bind<SessionViewModel.Create>().To(ctx => new SessionViewModel.Create(() => new SessionViewModel()))
-        .Bind<RootViewModel>().To<RootViewModel>();
+        .Bind<RootViewModel>().As(Lifetime.Singleton).To<RootViewModel>(); // Shouldn't be reloaded via some sample click
 }
