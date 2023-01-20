@@ -17,7 +17,6 @@ public class RoslynService : IRoslynService
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Console.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Private.CoreLib.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Runtime.dll")),
-
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.Expressions.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.dll")),
