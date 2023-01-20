@@ -145,8 +145,24 @@ class Program
         Sample5 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Collections.Generic;
 
-record Employee(string Fullname, int Age);
+class Program
+{
+    public static void Main()
+    {
+        var service = new EmployeeService();
+        var employees = new EntityCollection<Employee>
+        {
+            new Employee("John", 45),
+            new Employee("Paul", 55)
+        };
+        service.ProcessEmployees(() => employees);
+    }
+}
+
+record Employee(string FullName, int Age);
 
 class EmployeeService
 {
@@ -154,75 +170,31 @@ class EmployeeService
     {
         var employees1 = employeeEntityFrameworkRepository()
             .Where(employee => IsEmployeeUnder(employee, 50))
-            .OrderBy(employee => employee.Fullname)
+            .OrderBy(employee => employee.FullName)
             .Take(10)
             .ToList();
 
         var employees2 = employeeEntityFrameworkRepository()
             .AsEnumerable()
             .Where(employee => employee.Age < 50)
-            .OrderBy(employee => employee.Fullname)
+            .OrderBy(employee => employee.FullName)
             .Take(10)
             .ToList();
+
+        Console.WriteLine(string.Join(", ", employees1.Concat(employees2).Select(e => e.FullName)));
     }
 
     private static bool IsEmployeeUnder(Employee employee, int age) => employee.Age < age;
 }
+
+class EntityCollection<T> : List<T>, IQueryable<T>
+{
+    public Type ElementType => typeof(T);
+    public Expression Expression => Expression.Empty();
+    public System.Linq.IQueryProvider Provider => null;
+}
 """);
         Sample6 = vmFactory.Create<FiddleViewModel.Create>()("""
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-public record DataDto(string Data);
-
-public interface IPagedGateway
-{
-    // Page starts from 1
-    // DataDto properties are not relevant here
-    Task<PageResult<DataDto>> GetPage(int pageNumber);
-}
-
-public class PageResult<T>
-{
-    // Records of this page
-    public IEnumerable<T> PageRecords { get; init; }
-
-    //Total pages available in the gateway
-    public int TotalPages { get; init; }
-}
-
-class Program
-{
-    public static async Task Main()
-    {
-        var data = await GetAllData(new PagedGateway());
-        Console.WriteLine(data.Count());
-    }
-
-    // Write some code that fetches all the pages and returns all the records available as an IEnumerable<DataDto>
-    // In order to fetch the pages use as much parallelism as possible
-    public static async Task<IEnumerable<DataDto>> GetAllData(IPagedGateway gateway)
-    {
-    }
-}
-
-public class PagedGateway : IPagedGateway
-{
-    public async Task<PageResult<DataDto>> GetPage(int pageNumber)
-    {
-        await Task.Delay(1);
-        return pageNumber switch
-        {
-            1 => new PageResult<DataDto> { PageRecords = new List<DataDto> { new DataDto("data1") }, TotalPages = 2 },
-            2 => new PageResult<DataDto> { PageRecords = new List<DataDto> { new DataDto("data2") }, TotalPages = 2 },
-            _ => throw new IndexOutOfRangeException(),
-        };
-    }
-}
-""");
-        Sample7 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -243,7 +215,7 @@ class Program
     }
 }
 """);
-        Sample8 = vmFactory.Create<FiddleViewModel.Create>()("""
+        Sample7 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 using System.Threading.Tasks;
 
@@ -263,7 +235,7 @@ class Program
 	}
 }
 """);
-        Sample9 = vmFactory.Create<FiddleViewModel.Create>()("""
+        Sample8 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 
 class A
@@ -301,7 +273,7 @@ class Program
     private static string GetArgument() => "some string";
 }
 """);
-        Sample10 = vmFactory.Create<FiddleViewModel.Create>()("""
+        Sample9 = vmFactory.Create<FiddleViewModel.Create>()("""
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -347,5 +319,4 @@ class Program
     public FiddleViewModel Sample7 { get; }
     public FiddleViewModel Sample8 { get; }
     public FiddleViewModel Sample9 { get; }
-    public FiddleViewModel Sample10 { get; }
 }
