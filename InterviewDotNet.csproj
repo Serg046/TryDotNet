@@ -4,7 +4,7 @@
     <TargetFramework>net7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-	<PublishTrimmed>true</PublishTrimmed>
+	<PublishTrimmed>false</PublishTrimmed>
   </PropertyGroup>
 
   <ItemGroup>
@@ -14,8 +14,18 @@
     <TrimmerRootAssembly Include="System.Linq" />
     <TrimmerRootAssembly Include="System.Linq.Expressions" />
     <TrimmerRootAssembly Include="System.Collections" />
-    <TrimmerRootAssembly Include="System.Threading.Tasks.Parallel" />
     <TrimmerRootAssembly Include="System.Collections.Concurrent" />
+    <TrimmerRootAssembly Include="System.ValueTuple" />
+    <TrimmerRootAssembly Include="System.Threading" />
+    <TrimmerRootAssembly Include="System.Threading.Timer" />
+    <TrimmerRootAssembly Include="System.Threading.ThreadPool" />
+    <TrimmerRootAssembly Include="System.Threading.Thread" />
+    <TrimmerRootAssembly Include="System.Threading.Tasks" />
+    <TrimmerRootAssembly Include="System.Threading.Tasks.Parallel" />
+    <TrimmerRootAssembly Include="System.Threading.Tasks.Extensions" />
+    <TrimmerRootAssembly Include="System.Threading.Tasks.Dataflow" />
+    <TrimmerRootAssembly Include="System.Threading.Overlapped" />
+    <TrimmerRootAssembly Include="System.Threading.Channels" />
   </ItemGroup>
 
   <ItemGroup>

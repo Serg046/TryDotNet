@@ -20,8 +20,18 @@ public class RoslynService : IRoslynService
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.Expressions.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.Concurrent.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.ValueTuple.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Timer.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.ThreadPool.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Thread.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Parallel.dll")),
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.Concurrent.dll"))
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Extensions.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Dataflow.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Overlapped.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Channels.dll"))
         });
     }
 
