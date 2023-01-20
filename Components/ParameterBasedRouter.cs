@@ -63,6 +63,10 @@ public class ParameterBasedRouter : IComponent, IHandleAfterRender, IDisposable
             "sample4" => typeof(Sample4),
             "sample5" => typeof(Sample5),
             "sample6" => typeof(Sample6),
+            "sample7" => typeof(Sample7),
+            "sample8" => typeof(Sample8),
+            "sample9" => typeof(Sample9),
+            "sample10" => typeof(Sample10),
             _ => typeof(Sample1)
         };
     }

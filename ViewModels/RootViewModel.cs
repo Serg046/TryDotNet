@@ -222,6 +222,120 @@ public class PagedGateway : IPagedGateway
     }
 }
 """);
+        Sample7 = vmFactory.Create<FiddleViewModel.Create>()("""
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+class Program
+{
+    public static void Main()
+    {
+        var list1 = Enumerable.Range(1, 100).ToList();
+        var list2 = new List<int>();
+
+        Parallel.ForEach(list1, element => {
+            list2.Add(element + 2); // Does this cause any problems?
+        });
+
+        Console.WriteLine("Done");
+    }
+}
+""");
+        Sample8 = vmFactory.Create<FiddleViewModel.Create>()("""
+using System;
+using System.Threading.Tasks;
+
+class Program
+{
+    public static void Main()
+    {
+        var actionTask = StartLongAction();
+        Console.WriteLine("Do something useful");
+        actionTask.Wait();
+        Console.WriteLine("Done");
+    }
+
+    private static async Task StartLongAction()
+    {
+        await Task.Delay(TimeSpan.FromSeconds(2));
+	}
+}
+""");
+        Sample9 = vmFactory.Create<FiddleViewModel.Create>()("""
+using System;
+
+class A
+{
+    public virtual void PrintInfo(object x)
+    {
+        Console.WriteLine("A/object");
+    }
+}
+
+class B : A
+{
+    public override void PrintInfo(object x)
+    {
+        Console.WriteLine("B/object");
+    }
+
+    public void PrintInfo(string x)
+    {
+        Console.WriteLine("B/string");
+    }
+}
+
+class Program
+{
+    public static void Main()
+    {
+        var argument = GetArgument();
+        A a = new B();
+
+        // What's the output here?
+        a.PrintInfo(argument);
+    }
+
+    private static string GetArgument() => "some string";
+}
+""");
+        Sample10 = vmFactory.Create<FiddleViewModel.Create>()("""
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Program
+{
+    public static void Main()
+    {
+        Console.WriteLine("With ToArray() call");
+        foreach (var item in GetNumbers(2).ToArray())
+        {
+            // What's the output?
+            Console.Write(item);
+        }
+        Console.WriteLine();
+
+        Console.WriteLine("Without ToArray() call");
+        foreach (var item in GetNumbers(2))
+        {
+            // What's the output?
+            Console.Write(item);
+        }
+    }
+
+    private static IEnumerable<int> GetNumbers(int count)
+    {
+        for (int index = 0; index < count; index++)
+        {
+            Console.Write(index);
+            yield return index;
+        }
+    }
+}
+""");
     }
 
     public FiddleViewModel Sample1 { get; }
@@ -230,4 +344,8 @@ public class PagedGateway : IPagedGateway
     public FiddleViewModel Sample4 { get; }
     public FiddleViewModel Sample5 { get; }
     public FiddleViewModel Sample6 { get; }
+    public FiddleViewModel Sample7 { get; }
+    public FiddleViewModel Sample8 { get; }
+    public FiddleViewModel Sample9 { get; }
+    public FiddleViewModel Sample10 { get; }
 }
