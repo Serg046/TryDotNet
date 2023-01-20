@@ -14,16 +14,15 @@ public class RoslynService : IRoslynService
     {
         _references ??= new(async () => new List<MetadataReference>
         {
-            // Needed for Sample5 & Sample7
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Console.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Private.CoreLib.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Runtime.dll")),
+
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Linq.Expressions.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Parallel.dll")),
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.Concurrent.dll")),
-            //---
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Console.dll")),
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Private.CoreLib.dll")),
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Runtime.dll"))
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Collections.Concurrent.dll"))
         });
     }
 
