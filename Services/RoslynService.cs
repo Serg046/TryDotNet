@@ -31,7 +31,8 @@ public class RoslynService : IRoslynService
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Extensions.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Tasks.Dataflow.dll")),
             MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Overlapped.dll")),
-            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Channels.dll"))
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/System.Threading.Channels.dll")),
+            MetadataReference.CreateFromStream(await httpClient.GetStreamAsync("_framework/Microsoft.CSharp.dll"))
         });
     }
 

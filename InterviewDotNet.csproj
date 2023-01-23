@@ -26,6 +26,7 @@
     <TrimmerRootAssembly Include="System.Threading.Tasks.Dataflow" />
     <TrimmerRootAssembly Include="System.Threading.Overlapped" />
     <TrimmerRootAssembly Include="System.Threading.Channels" />
+    <TrimmerRootAssembly Include="Microsoft.CSharp" />
   </ItemGroup>
 
   <ItemGroup>
