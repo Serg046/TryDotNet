@@ -8,7 +8,7 @@
   "resources": {
     "assembly": {
       "BlazorMonaco.dll": "sha256-azr7uUonDjjxaCvj\/fd9X9dbiRNGuuqGzG46\/\/k9G0o=",
-      "InterviewDotNet.dll": "sha256-Be7l5zzGwUBYgiYT96y\/xN9I2AwHKfZXoHcDx2xtmU0=",
+      "InterviewDotNet.dll": "sha256-iMDOXa15WL7f+o9pHvUPjR7GKaELvvGjEbpt22FbESM=",
       "Microsoft.AspNetCore.Components.dll": "sha256-FPmfFe+3pbEj51j0drERJnLKIkeM4mPOmhLWtuKQE+Q=",
       "Microsoft.AspNetCore.Components.Web.dll": "sha256-Ug3w+VrCSbgu3YqKZF2NxJXgGMw8C+rQ3K1JxxhnNQ8=",
       "Microsoft.AspNetCore.Components.WebAssembly.dll": "sha256-lYPvKjSvBg0cMe7FlNMNS5z3kXrCuPLj1+WJGVl7NxU=",
@@ -16,6 +16,7 @@
       "Microsoft.CodeAnalysis.CSharp.Scripting.dll": "sha256-aQHjijIOKNER4boPIillmsm6x4zcCCZ6VrF8Iux+FfE=",
       "Microsoft.CodeAnalysis.dll": "sha256-f4olXW5VlaZWS\/pm+f2a\/bon5RvXkmHzttxnSONAjUs=",
       "Microsoft.CodeAnalysis.Scripting.dll": "sha256-I08UNPZWfq9lEpasnB7sTCtV69C5ImuJzQJIJrQzNNg=",
+      "Microsoft.CSharp.dll": "sha256-FWCuPmOmgiOH+yf8assJ\/zkmP3u3UlIr0cEz22mW9rE=",
       "Microsoft.Extensions.Configuration.Abstractions.dll": "sha256-X\/f4fDl2cuIRXeWHhK\/f2UqQbFioD+RU4a4CEh0zrrQ=",
       "Microsoft.Extensions.Configuration.dll": "sha256-DBOKSPriP2JDxVbbWrLXyD3K4\/x3RBifNBWk\/q1I39M=",
       "Microsoft.Extensions.Configuration.Json.dll": "sha256-nTqLKuydttqLtE3VT3p6XhPmLxuaJDd0cL3Qzt8D4Ro=",
@@ -65,7 +66,7 @@
       "System.Runtime.CompilerServices.Unsafe.dll": "sha256-ZlbBlUJkfmvAt5axXVIHpEdtUvaYHQ3KzOW1UkwFLeU=",
       "System.Runtime.dll": "sha256-6xIIgwJdisYi\/muv0UVMQDXPvQJPZeKfKKnuIPz0CFA=",
       "System.Runtime.Extensions.dll": "sha256-TJraNdtGNqpr77FyS2fjUqwFNV45+j4+JQ4U+y7cv6Y=",
-      "System.Runtime.InteropServices.dll": "sha256-cQwVJmW6cMVHMyupy1xwLltNo2\/XT2Zi84kq2BVBkWw=",
+      "System.Runtime.InteropServices.dll": "sha256-qIWZYyYIVMBrwneS4uknMYK8vw2Ttz0lFX9vcpvV\/Bk=",
       "System.Runtime.InteropServices.JavaScript.dll": "sha256-BPqE6NqU82guV5Qguh5jIghbFK\/CaIYUARPOd6Bsz5M=",
       "System.Runtime.InteropServices.RuntimeInformation.dll": "sha256-BF4vYs48xAVEm8CX5a1m1FO7Nbs6p5zkbY0aYIs1TP0=",
       "System.Runtime.Loader.dll": "sha256-1i\/ulkAHbfDZbOvc8GHymVb9x5FK8qYO8XuI4XqqIdw=",
